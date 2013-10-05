@@ -115,9 +115,6 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\..\Addins\StuffOnSave - For Testing.AddIn">
-      <Link>StuffOnSave - For Testing.AddIn</Link>
-    </Content>
     <Content Include="StuffOnSave.AddIn" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />

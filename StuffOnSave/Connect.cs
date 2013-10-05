@@ -26,17 +26,25 @@ namespace StuffOnSave
 			
             _documentEvents = _applicationObject.Events.DocumentEvents;
             _documentEvents.DocumentSaved += DocumentSaved;
+
 		}
 
 	    private void DocumentSaved(Document document)
 	    {
+// ReSharper disable PossibleNullReferenceException
 	        var fileName = Path.GetFileName(document.FullName);
 	        var extension = Path.GetExtension(document.FullName);
 
 	        if (extension == ".css" && !fileName.EndsWith(".prefixed.css"))
 	        {
-                System.Diagnostics.Process.Start(@"C:\Users\Ted\Documents\GitHub\PrefixCSS\PrefixCSS\bin\Debug\PrefixCSS.exe", document.FullName);
+		        var exePath = @"C:\Users\Ted\Documents\GitHub\PrefixCSS\PrefixCSS\bin\Debug\PrefixCSS.exe";
+				if (!File.Exists(exePath))
+					exePath = @"D:\GitHub\PrefixCSS\PrefixCSS\bin\Debug\PrefixCSS.exe";
+
+				if (File.Exists(exePath))
+					System.Diagnostics.Process.Start(exePath, document.FullName);
 	        }
+// ReSharper restore PossibleNullReferenceException
 
 	}
 
