@@ -3,6 +3,8 @@ using System.IO;
 using Extensibility;
 using EnvDTE;
 using EnvDTE80;
+using PrefixCSS;
+
 namespace StuffOnSave
 {
 	/// <summary>The object for implementing an Add-in.</summary>
@@ -10,15 +12,13 @@ namespace StuffOnSave
 	public class Connect : IDTExtensibility2
 	{
 		/// <summary>Implements the constructor for the Add-in object. Place your initialization code within this method.</summary>
+// ReSharper disable EmptyConstructor
 		public Connect()
 		{
 		}
+// ReSharper restore EmptyConstructor
 
 		/// <summary>Implements the OnConnection method of the IDTExtensibility2 interface. Receives notification that the Add-in is being loaded.</summary>
-		/// <param term='application'>Root object of the host application.</param>
-		/// <param term='connectMode'>Describes how the Add-in is being loaded.</param>
-		/// <param term='addInInst'>Object representing this Add-in.</param>
-		/// <seealso class='IDTExtensibility2' />
 		public void OnConnection(object application, ext_ConnectMode connectMode, object addInInst, ref Array custom)
 		{
 			_applicationObject = (DTE2)application;
@@ -27,6 +27,8 @@ namespace StuffOnSave
             _documentEvents = _applicationObject.Events.DocumentEvents;
             _documentEvents.DocumentSaved += DocumentSaved;
 
+
+			_CSSPrefixer = new CSSPrefixes(_applicationObject);
 		}
 
 	    private void DocumentSaved(Document document)
@@ -37,48 +39,44 @@ namespace StuffOnSave
 
 	        if (extension == ".css" && !fileName.EndsWith(".prefixed.css"))
 	        {
-		        var exePath = @"C:\Users\Ted\Documents\GitHub\PrefixCSS\PrefixCSS\bin\Debug\PrefixCSS.exe";
-				if (!File.Exists(exePath))
-					exePath = @"D:\GitHub\PrefixCSS\PrefixCSS\bin\Debug\PrefixCSS.exe";
+				_CSSPrefixer.Add(document.FullName);
 
-				if (File.Exists(exePath))
-					System.Diagnostics.Process.Start(exePath, document.FullName);
+				//var exePath = @"C:\Users\Ted\Documents\GitHub\PrefixCSS\PrefixCSS\bin\Debug\PrefixCSS.exe";
+				//if (!File.Exists(exePath))
+				//	exePath = @"D:\GitHub\PrefixCSS\PrefixCSS\bin\Debug\PrefixCSS.exe";
+
+				//if (File.Exists(exePath))
+				//	System.Diagnostics.Process.Start(exePath, document.FullName);
 	        }
 // ReSharper restore PossibleNullReferenceException
 
 	}
 
 	    /// <summary>Implements the OnDisconnection method of the IDTExtensibility2 interface. Receives notification that the Add-in is being unloaded.</summary>
-		/// <param term='disconnectMode'>Describes how the Add-in is being unloaded.</param>
-		/// <param term='custom'>Array of parameters that are host application specific.</param>
-		/// <seealso class='IDTExtensibility2' />
 		public void OnDisconnection(ext_DisconnectMode disconnectMode, ref Array custom)
 		{
 		}
 
 		/// <summary>Implements the OnAddInsUpdate method of the IDTExtensibility2 interface. Receives notification when the collection of Add-ins has changed.</summary>
-		/// <param term='custom'>Array of parameters that are host application specific.</param>
-		/// <seealso class='IDTExtensibility2' />		
 		public void OnAddInsUpdate(ref Array custom)
 		{
 		}
 
 		/// <summary>Implements the OnStartupComplete method of the IDTExtensibility2 interface. Receives notification that the host application has completed loading.</summary>
-		/// <param term='custom'>Array of parameters that are host application specific.</param>
-		/// <seealso class='IDTExtensibility2' />
 		public void OnStartupComplete(ref Array custom)
 		{
 		}
 
 		/// <summary>Implements the OnBeginShutdown method of the IDTExtensibility2 interface. Receives notification that the host application is being unloaded.</summary>
-		/// <param term='custom'>Array of parameters that are host application specific.</param>
-		/// <seealso class='IDTExtensibility2' />
 		public void OnBeginShutdown(ref Array custom)
 		{
 		}
 		
 		private DTE2 _applicationObject;
+// ReSharper disable NotAccessedField.Local
 		private AddIn _addInInstance;
+// ReSharper restore NotAccessedField.Local
 	    private DocumentEvents _documentEvents;
+		private CSSPrefixes _CSSPrefixer;
 	}
 }
